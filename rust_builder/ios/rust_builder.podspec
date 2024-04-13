@@ -2,6 +2,7 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
 # Run `pod lib lint rust_builder.podspec` to validate before publishing.
 #
+
 Pod::Spec.new do |s|
   s.name             = 'rust_builder'
   s.version          = '0.0.1'
@@ -36,10 +37,12 @@ A new Flutter FFI plugin project.
     # created by this build step.
     :output_files => ["${BUILT_PRODUCTS_DIR}/librust_lib.a"],
   }
+
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    # Flutter.framework does not contain a i386 slice.
     'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
     'OTHER_LDFLAGS' => '-force_load ${BUILT_PRODUCTS_DIR}/librust_lib.a',
   }
+
+  s.ios.frameworks = 'CoreBluetooth' # Add this line to declare the dependency on CoreBluetooth.framework
 end

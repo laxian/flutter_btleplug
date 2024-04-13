@@ -107,6 +107,7 @@ ProcessResult runCommand(
     );
   }
   log.finer('Running command $executable ${arguments.join(' ')}');
+  print('Running command $executable ${arguments.join(' ')}');
   final res = Process.runSync(
     _resolveExecutable(executable),
     arguments,
@@ -118,6 +119,10 @@ ProcessResult runCommand(
     stdoutEncoding: stdoutEncoding,
   );
   if (res.exitCode != 0) {
+    print("===> executable: $executable");
+    print("===> args: $arguments");
+    print("===> res: ${res.exitCode}");
+    print("===> res: ${res.stderr}");
     throw CommandFailedException(
       executable: executable,
       arguments: arguments,

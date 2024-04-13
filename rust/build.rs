@@ -1,5 +1,5 @@
 use lib_flutter_rust_bridge_codegen::codegen::{Config, MetaConfig};
-use std::{env, io};
+// use std::{env, io};
 
 const RUST_INPUT: &str = "src/api/**/*.rs";
 const DART_OUTPUT: &str = "../lib/src/rust";
