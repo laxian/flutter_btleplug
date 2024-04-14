@@ -2,7 +2,8 @@ use flutter_rust_bridge::frb;
 use std::sync::OnceLock;
 use tokio::runtime::Runtime;
 
-pub static RUNTIME: OnceLock<Runtime> = OnceLock::new();
+// pub static RUNTIME: OnceLock<Runtime> = OnceLock::new();
+use super::RUNTIME;
 
 #[frb(ignore)]
 pub fn create_runtime() -> anyhow::Result<()> {

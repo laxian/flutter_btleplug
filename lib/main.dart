@@ -6,6 +6,7 @@ import 'package:flutter_btleplug/src/rust/frb_generated.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:logger/logger.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 final log = Logger(level: Level.debug);
 
@@ -25,6 +26,7 @@ final scanProvider = StateNotifierProvider<ScanNotifier, List<BleDevice>>(
 
 void main() async {
   await RustLib.init();
+  addLogger(name: "zwx", level: LogLevel.debug);
   enableLogging().listen((msg) => log.i(msg));
   init();
   runApp(const ProviderScope(child: MyApp()));
@@ -45,6 +47,11 @@ class MyApp extends ConsumerWidget {
             ElevatedButton(
                 onPressed: () {
                   log.i('scanning...');
+                  Permission.bluetooth.request();
+                  Permission.bluetoothScan.request();
+                  Permission.bluetoothAdvertise.request();
+                  Permission.bluetoothConnect.request();
+                  Permission.location.request();
                   ref.read(scanProvider.notifier).start();
                 },
                 child: const Text('scan')),
