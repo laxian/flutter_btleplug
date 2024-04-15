@@ -74,6 +74,8 @@ abstract class RustLibApi extends BaseApi {
 
   Stream<List<BleDevice>> scan({required List<String> filter, dynamic hint});
 
+  Future<void> stopScan({dynamic hint});
+
   Future<BleDevice> bleDeviceFromPeripheral(
       {required Peripheral peripheral, dynamic hint});
 
@@ -206,6 +208,30 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kScanConstMeta => const TaskConstMeta(
         debugName: "scan",
         argNames: ["filter"],
+      );
+
+  @override
+  Future<void> stopScan({dynamic hint}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 16, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_unit,
+        decodeErrorData: sse_decode_AnyhowException,
+      ),
+      constMeta: kStopScanConstMeta,
+      argValues: [],
+      apiImpl: this,
+      hint: hint,
+    ));
+  }
+
+  TaskConstMeta get kStopScanConstMeta => const TaskConstMeta(
+        debugName: "stop_scan",
+        argNames: [],
       );
 
   @override
@@ -372,7 +398,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(name, serializer);
         sse_encode_log_level(level, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 16, port: port_);
+            funcId: 17, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -396,7 +422,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 17, port: port_);
+            funcId: 18, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,

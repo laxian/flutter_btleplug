@@ -160,6 +160,33 @@ fn wire_scan_impl(
         },
     )
 }
+fn wire_stop_scan_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_normal::<flutter_rust_bridge::for_generated::SseCodec, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "stop_scan",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            deserializer.end();
+            move |context| transform_result_sse((move || crate::api::ble::stop_scan())())
+        },
+    )
+}
 fn wire_BleDevice_from_peripheral_impl(
     port_: flutter_rust_bridge::for_generated::MessagePort,
     ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
@@ -602,14 +629,15 @@ fn pde_ffi_dispatcher_primary_impl(
         15 => wire_disconnect_impl(port, ptr, rust_vec_len, data_len),
         12 => wire_init_impl(port, ptr, rust_vec_len, data_len),
         13 => wire_scan_impl(port, ptr, rust_vec_len, data_len),
+        16 => wire_stop_scan_impl(port, ptr, rust_vec_len, data_len),
         1 => wire_BleDevice_from_peripheral_impl(port, ptr, rust_vec_len, data_len),
         5 => wire_Peripheral_connect_impl(port, ptr, rust_vec_len, data_len),
         6 => wire_Peripheral_disconnect_impl(port, ptr, rust_vec_len, data_len),
         7 => wire_Peripheral_is_connected_impl(port, ptr, rust_vec_len, data_len),
         4 => wire_Peripheral_name_impl(port, ptr, rust_vec_len, data_len),
         11 => wire_create_runtime_impl(port, ptr, rust_vec_len, data_len),
-        16 => wire_add_logger_impl(port, ptr, rust_vec_len, data_len),
-        17 => wire_enable_logging_impl(port, ptr, rust_vec_len, data_len),
+        17 => wire_add_logger_impl(port, ptr, rust_vec_len, data_len),
+        18 => wire_enable_logging_impl(port, ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }

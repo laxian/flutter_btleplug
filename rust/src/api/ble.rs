@@ -26,6 +26,7 @@ enum Command {
         sink: StreamSink<Vec<BleDevice>>,
         filter: Vec<String>,
     },
+    StopScan,
     Connect {
         id: String,
     },
@@ -36,13 +37,30 @@ enum Command {
 
 impl std::fmt::Debug for Command {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Scan").finish()
+        match self {
+            Command::Scan { .. } => f.debug_struct("Scan").finish(),
+            Command::Connect { .. } => f.debug_struct("Connect").finish(),
+            Command::Disconnect { .. } => f.debug_struct("Disconnect").finish(),
+            Command::StopScan => f.debug_struct("StopScan").finish(),
+        }
     }
 }
 
 static DEVICES: OnceLock<Arc<Mutex<HashMap<String, Peripheral>>>> = OnceLock::new();
 
 static TX: OnceLock<mpsc::UnboundedSender<Command>> = OnceLock::new();
+
+use std::sync::atomic::{AtomicBool, Ordering};
+
+static IS_SCANNING: AtomicBool = AtomicBool::new(false);
+
+fn set_is_scanning(value: bool) {
+    IS_SCANNING.store(value, Ordering::SeqCst);
+}
+
+fn get_is_scanning() -> bool {
+    IS_SCANNING.load(Ordering::SeqCst)
+}
 
 /// Internal send function to send [Command]s into the message loop.
 fn send(command: Command) -> Result<()> {
@@ -72,6 +90,7 @@ pub fn init() -> Result<()> {
                 }
                 Command::Connect { id } => inner_connect(id).await.unwrap(),
                 Command::Disconnect { id } => inner_disconnect(id).await.unwrap(),
+                Command::StopScan => {inner_stop_scan().await.unwrap()}
             }
         }
     });
@@ -140,10 +159,11 @@ async fn inner_scan(sink: StreamSink<Vec<BleDevice>>, _filter: Vec<String>) -> R
         "{}",
         format!("start scanning on {}", central.adapter_info().await?)
     );
+    set_is_scanning(true);
     central.start_scan(ScanFilter::default()).await?;
 
     let mut device_send_interval = time::interval(time::Duration::from_secs(1));
-    loop {
+    while get_is_scanning() {
         tokio::select! {
             _ = device_send_interval.tick() => {
                 remove_stale_devices(3).await;
@@ -234,4 +254,18 @@ async fn inner_disconnect(id: String) -> Result<()> {
         .get(&id)
         .ok_or(anyhow::anyhow!("UnknownPeripheral(id)"))?;
     device.disconnect().await
+}
+
+/// Stops the ongoing BLE device scan.
+pub fn stop_scan() -> Result<()> {
+    send(Command::StopScan)
+}
+
+async fn inner_stop_scan() -> Result<()> {
+    set_is_scanning(false);
+    let manager = Manager::new().await?;
+    let adapters = manager.adapters().await?;
+    let central = adapters.into_iter().next().expect("cannot fail");
+    central.stop_scan().await?;
+    Ok(())
 }

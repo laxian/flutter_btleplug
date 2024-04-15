@@ -19,6 +19,10 @@ class ScanNotifier extends StateNotifier<List<BleDevice>> {
       state = s;
     });
   }
+
+  void stop() {
+    stopScan();
+  }
 }
 
 final scanProvider = StateNotifierProvider<ScanNotifier, List<BleDevice>>(
@@ -55,6 +59,12 @@ class MyApp extends ConsumerWidget {
                   ref.read(scanProvider.notifier).start();
                 },
                 child: const Text('scan')),
+            ElevatedButton(
+                onPressed: () {
+                  log.i('stop scanning...');
+                  ref.read(scanProvider.notifier).stop();
+                },
+                child: const Text('stop_scan')),
             ListView(
               shrinkWrap: true,
               children: [
