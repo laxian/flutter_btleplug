@@ -28,5 +28,19 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <!--for connecting to devices (client)-->
+        <string>bluetooth-central</string>
+
+        <!--for server configurations if needed-->
+        <string>bluetooth-peripheral</string>
+    </array>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>请允许此应用使用蓝牙，以便扫描并连接附近的蓝牙设备</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>请允许此应用使用蓝牙，以便扫描并连接附近的蓝牙设备</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>为了更好地提供服务，请允许应用在使用期间访问您的位置信息</string>
 </dict>
 </plist>
