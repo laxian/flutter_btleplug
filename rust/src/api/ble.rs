@@ -21,6 +21,8 @@ use crate::frb_generated::StreamSink;
 pub use device::*;
 pub use peripheral::*;
 
+use uuid::Uuid;
+
 enum Command {
     Scan {
         sink: StreamSink<Vec<BleDevice>>,
@@ -160,16 +162,17 @@ async fn inner_scan(sink: StreamSink<Vec<BleDevice>>, _filter: Vec<String>) -> R
         format!("start scanning on {}", central.adapter_info().await?)
     );
     set_is_scanning(true);
-    central.start_scan(ScanFilter::default()).await?;
+    central.start_scan(ScanFilter {
+        services: _filter.iter().map(|s| Uuid::parse_str(s).unwrap()).collect(),
+    })
+    .await?;
 
     let mut device_send_interval = time::interval(time::Duration::from_secs(1));
     while get_is_scanning() {
         tokio::select! {
             _ = device_send_interval.tick() => {
-                remove_stale_devices(3).await;
-                if send_devices(&sink).await.is_err() {
-                    break;
-                }
+                // 超30s没更新的设备，从设备列表中移除
+                remove_stale_devices(30).await;
             }
             Some(event) = events.next() => {
                 // tracing::debug!(format!("{:?}", event));
@@ -180,6 +183,14 @@ async fn inner_scan(sink: StreamSink<Vec<BleDevice>>, _filter: Vec<String>) -> R
                         let peripheral = Peripheral::new(peripheral);
                         let mut devices = DEVICES.get().unwrap().lock().await;
                         devices.insert(id.to_string(), peripheral);
+                        // 释放锁
+                        drop(devices);
+                        // 发现设备立即发送设备列表
+                        if send_devices(&sink).await.is_err() {
+                            tracing::debug!("{}",format!("DeviceDiscovered send_devices ERR"));
+                            break;
+                        }
+                        tracing::debug!("{}",format!("==> thread: {:?}", std::thread::current().name()));
                     }
                     CentralEvent::DeviceUpdated(id) => {
                         let mut devices = DEVICES.get().unwrap().lock().await;
