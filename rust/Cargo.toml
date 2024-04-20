@@ -20,6 +20,8 @@ tokio-stream = { version = "0.1.14", features = ["sync"] }
 tracing = "0.1.40"
 tracing-core = "0.1.32"
 tracing-subscriber = "0.3.18"
+log = "0.4.21"
+android_logger = "0.13.3"
 
 [build-dependencies]
 flutter_rust_bridge_codegen = "=2.0.0-dev.20"
