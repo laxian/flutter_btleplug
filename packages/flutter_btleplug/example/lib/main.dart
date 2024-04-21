@@ -17,6 +17,7 @@ class ScanNotifier extends StateNotifier<List<BleDevice>> {
   ScanNotifier() : super([]);
 
   void start() {
+    log.i("scan started: ");
     final scan = btl.scan(filter: []);
     scan.listen((s) {
       state = s;
@@ -64,7 +65,13 @@ class MyApp extends ConsumerWidget {
             ElevatedButton(
                 onPressed: () async {
                   log.i('scanning...');
+                  await Permission.bluetooth.request();
                   await Permission.bluetoothScan.request();
+                  await Permission.bluetoothAdvertise.request();
+                  await Permission.bluetoothConnect.request();
+                  await Permission.location.request();
+                  await Permission.locationAlways.request();
+                  await Permission.locationWhenInUse.request();
                   ref.read(scanProvider.notifier).start();
                 },
                 child: const Text('scan')),

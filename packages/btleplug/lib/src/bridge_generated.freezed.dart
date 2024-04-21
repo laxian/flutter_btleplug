@@ -11,7 +11,7 @@ part of 'bridge_generated.dart';
 
 T _$identity<T>(T value) => value;
 
-final _privateConstructorUsedError = UnsupportedError('It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+final _privateConstructorUsedError = UnsupportedError('It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$BleEvent {
@@ -159,7 +159,7 @@ class _$BleEvent_DeviceDiscoveredImpl implements BleEvent_DeviceDiscovered {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) || (other.runtimeType == runtimeType && other is _$BleEvent_DeviceDiscoveredImpl && (identical(other.id, id) || other.id == id));
   }
 
@@ -314,7 +314,7 @@ class _$BleEvent_DeviceUpdatedImpl implements BleEvent_DeviceUpdated {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) || (other.runtimeType == runtimeType && other is _$BleEvent_DeviceUpdatedImpl && (identical(other.id, id) || other.id == id));
   }
 
@@ -469,7 +469,7 @@ class _$BleEvent_DeviceConnectedImpl implements BleEvent_DeviceConnected {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) || (other.runtimeType == runtimeType && other is _$BleEvent_DeviceConnectedImpl && (identical(other.id, id) || other.id == id));
   }
 
@@ -624,7 +624,7 @@ class _$BleEvent_DeviceDisconnectedImpl implements BleEvent_DeviceDisconnected {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) || (other.runtimeType == runtimeType && other is _$BleEvent_DeviceDisconnectedImpl && (identical(other.id, id) || other.id == id));
   }
 
@@ -791,7 +791,7 @@ class _$BleEvent_ManufacturerDataAdvertisementImpl implements BleEvent_Manufactu
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) || (other.runtimeType == runtimeType && other is _$BleEvent_ManufacturerDataAdvertisementImpl && (identical(other.id, id) || other.id == id) && const DeepCollectionEquality().equals(other._manufacturerData, _manufacturerData));
   }
 
@@ -959,7 +959,7 @@ class _$BleEvent_ServiceDataAdvertisementImpl implements BleEvent_ServiceDataAdv
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) || (other.runtimeType == runtimeType && other is _$BleEvent_ServiceDataAdvertisementImpl && (identical(other.id, id) || other.id == id) && const DeepCollectionEquality().equals(other._serviceData, _serviceData));
   }
 
@@ -1127,7 +1127,7 @@ class _$BleEvent_ServicesAdvertisementImpl implements BleEvent_ServicesAdvertise
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) || (other.runtimeType == runtimeType && other is _$BleEvent_ServicesAdvertisementImpl && (identical(other.id, id) || other.id == id) && const DeepCollectionEquality().equals(other._services, _services));
   }
 
