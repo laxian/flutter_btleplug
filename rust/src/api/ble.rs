@@ -341,6 +341,8 @@ pub extern "system" fn Java_com_example_bleandroid_RustBridge_scanWrapper(
     callback: JObject,
 ) {
     trace!("ZWX scan ----------------------------------------------------------------");
+    let callback = env.new_global_ref(callback).unwrap();
+
     // Convert jobjectArray to Vec<JObject>
     let filter_vec: Vec<String> = (0..env.get_array_length(filter).unwrap()).map(|i| {
         let item: Result<JString<'_>, jni::errors::Error> = env.get_object_array_element(filter, i as i32).map_or_else(|e| Err(e), |obj| Ok(JString::from(obj)));
@@ -360,8 +362,7 @@ pub extern "system" fn Java_com_example_bleandroid_RustBridge_scanWrapper(
     let cb = move |devices: Vec<BleDevice>| {
         trace!("ZWX cb ----------------------------------------------------------------");
         let env = jvm.attach_current_thread().unwrap();
-        trace!("ZWX cb1 ----------------------------------------------------------------");
-
+        
         // Convert Vec<BleDevice> to Array<BleDevice>
         let array_class = env.find_class("com/example/bleandroid/BleDevice").unwrap();
         let array = env.new_object_array(devices.len() as i32, array_class, JObject::null()).unwrap();
@@ -373,19 +374,49 @@ pub extern "system" fn Java_com_example_bleandroid_RustBridge_scanWrapper(
             ).unwrap();
             env.set_object_array_element(array, i as i32, java_device).unwrap();
         }
+        
+        // Call the Kotlin callback method
+        // let method_name_d = "demo";
+        // let method_signature_d = "()V";
+        // env.call_method(&callback, method_name_d, method_signature_d, &[]).expect("call demo error");
+        // trace!("ZWX call kotlin demo ----------------------------------------------------------------");
+        // Create a Rust string
+        
+        // let msg = "hello rust";
+        // // Convert Rust string to JNI string
+        // let jni_msg = env.new_string(msg).expect("Couldn't create JNI string from Rust string");
+        // let method_name_d = "demo1";
+        // let method_signature_d = "(Ljava/lang/String;)V";
+        // env.call_method(&callback, method_name_d, method_signature_d, &[jni_msg.into()]).expect("call demo error");
+        
+        // 创建一个包含字符串的数组
+        // let strings: Vec<&str> = vec!["String 1", "String 2", "String 3"];
+        // // 创建 JNI 字符串数组并将 Rust 字符串转换为 JNI 字符串并添加到数组中
+        // let array = env.new_object_array(strings.len() as i32, "java/lang/String", JObject::null()).unwrap();
+        // for (index, &string) in strings.iter().enumerate() {
+        //     let jni_string = env.new_string(string).unwrap();
+        //     env.set_object_array_element(array, index as i32, jni_string).unwrap();
+        // }
+    
+        // // 调用 Kotlin 方法 demo2
+        // let method_name_d = "demo2";
+        // let method_signature_d = "([Ljava/lang/String;)V";
+        // env.call_method(&callback, method_name_d, method_signature_d, &[JValue::Object(array.into())]).expect("call demo error");
+        
 
-        // call callback
+        // 调用 Kotlin 方法 demo2
+        let method_name_d = "onDeviceFound";
+        let method_signature_d = "([Lcom/example/bleandroid/BleDevice;)V";
+        env.call_method(&callback, method_name_d, method_signature_d, &[JValue::Object(array.into())]).expect("call demo error");
+    
 
-        // // Call the Kotlin callback method
-        // let method_name = "onDeviceFound";
-        // let method_signature = "([com/example/bleandroid/BleDevice;)V";
-        // env.call_method(callback, method_name, method_signature, &[JValue::Object(array.into())])
-        //     .expect("Failed to call callback method");
+        trace!("ZWX call kotlin cb end ----------------------------------------------------------------");
     };
     let future = async { 
             trace!("ZWX spawn ----------------------------------------------------------------");
             inner_scan(filter_vec, move |devices| {
                 trace!("{}",format!("DeviceDiscovered: {:?}", devices));
+                cb(devices);
             }).await.unwrap();
         };
         let runtime = Runtime::new().unwrap();
