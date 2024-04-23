@@ -30,3 +30,6 @@ Future<void> disconnect({required String id, dynamic hint}) =>
 /// Stops the ongoing BLE device scan.
 Future<void> stopScan({dynamic hint}) =>
     RustLib.instance.api.stopScan(hint: hint);
+
+Future<int> rustAdd({required int n1, required int n2, dynamic hint}) =>
+    RustLib.instance.api.rustAdd(n1: n1, n2: n2, hint: hint);

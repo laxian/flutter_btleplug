@@ -72,6 +72,8 @@ abstract class RustLibApi extends BaseApi {
 
   Future<void> init({dynamic hint});
 
+  Future<int> rustAdd({required int n1, required int n2, dynamic hint});
+
   Stream<List<BleDevice>> scan({required List<String> filter, dynamic hint});
 
   Future<void> stopScan({dynamic hint});
@@ -183,6 +185,32 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kInitConstMeta => const TaskConstMeta(
         debugName: "init",
         argNames: [],
+      );
+
+  @override
+  Future<int> rustAdd({required int n1, required int n2, dynamic hint}) {
+    return handler.executeNormal(NormalTask(
+      callFfi: (port_) {
+        final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_i_32(n1, serializer);
+        sse_encode_i_32(n2, serializer);
+        pdeCallFfi(generalizedFrbRustBinding, serializer,
+            funcId: 19, port: port_);
+      },
+      codec: SseCodec(
+        decodeSuccessData: sse_decode_i_32,
+        decodeErrorData: null,
+      ),
+      constMeta: kRustAddConstMeta,
+      argValues: [n1, n2],
+      apiImpl: this,
+      hint: hint,
+    ));
+  }
+
+  TaskConstMeta get kRustAddConstMeta => const TaskConstMeta(
+        debugName: "rust_add",
+        argNames: ["n1", "n2"],
       );
 
   @override
@@ -398,7 +426,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         sse_encode_String(name, serializer);
         sse_encode_log_level(level, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 17, port: port_);
+            funcId: 23, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_unit,
@@ -422,7 +450,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
-            funcId: 18, port: port_);
+            funcId: 24, port: port_);
       },
       codec: SseCodec(
         decodeSuccessData: sse_decode_String,

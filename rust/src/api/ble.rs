@@ -4,6 +4,7 @@ use std::sync::{Arc, OnceLock};
 use anyhow::Result;
 use btleplug::api::{Central, CentralEvent, Manager as _, ScanFilter};
 pub use btleplug::platform::Manager;
+use flutter_rust_bridge::frb;
 use futures::stream::StreamExt;
 use jni::objects::{JClass, JObject, JString, JValue};
 use jni::sys::{jint, jobjectArray};
@@ -280,7 +281,7 @@ async fn inner_stop_scan() -> Result<()> {
 
 
 // 包装异步 Rust 函数，使其能够从 C++ 中调用
-// frb:skip
+#[frb(ignore)]
 #[no_mangle]
 pub extern "C" fn scan_wrapper<F>(filter: Vec<String>, sink_callback: F) 
 where
@@ -297,7 +298,7 @@ where
 }
 
 // 声明 init_wrapper 函数
-// frb:skip
+#[frb(ignore)]
 #[no_mangle]
 pub extern "C" fn init_wrapper() -> i32 {
     match init() {
@@ -320,12 +321,14 @@ fn native_activity_create() {
     );
 }
 
+#[frb(ignore)]
 #[no_mangle]
 pub extern "C" fn Java_com_example_bleandroid_RustBridge_initWrapper(env: JNIEnv, _class: JClass) -> i32 {
     trace!("ZWX init ----------------------------------------------------------------");
     init_wrapper()
 }
 
+#[frb(ignore)]
 #[no_mangle]
 pub extern "C" fn Java_com_example_bleandroid_RustBridge_add(env: JNIEnv, _class: JClass, n1: jint, n2: jint) -> jint {
     native_activity_create();
@@ -333,6 +336,7 @@ pub extern "C" fn Java_com_example_bleandroid_RustBridge_add(env: JNIEnv, _class
     rust_add(n1, n2) * 2
 }
 
+#[frb(ignore)]
 #[no_mangle]
 pub extern "system" fn Java_com_example_bleandroid_RustBridge_scanWrapper(
     env: JNIEnv,
